@@ -79,14 +79,14 @@ pub const Camera = struct {
     }
 
     pub fn processKeyboard(self: *Camera, direction: CameraMovement, deltaTime: f32) void {
-        const velocity = self.speed * deltaTime;
+        const s = self.speed * deltaTime;
         switch (direction) {
-            .Forward => self.position = self.position.add(self.front.mulScalar(velocity)),
-            .Backward => self.position = self.position.sub(self.front.mulScalar(velocity)),
-            .Left => self.position = self.position.sub(self.right.mulScalar(velocity)),
-            .Right => self.position = self.position.add(self.right.mulScalar(velocity)),
-            .Up => self.position = self.position.add(self.up.mulScalar(velocity)),
-            .Down => self.position = self.position.sub(self.up.mulScalar(velocity)),
+            .Forward => self.position = self.position.add(self.front.mulScalar(s)),
+            .Backward => self.position = self.position.sub(self.front.mulScalar(s)),
+            .Left => self.position = self.position.sub(self.right.mulScalar(s)),
+            .Right => self.position = self.position.add(self.right.mulScalar(s)),
+            .Up => self.position = self.position.add(self.up.mulScalar(s)),
+            .Down => self.position = self.position.sub(self.up.mulScalar(s)),
         }
     }
 
