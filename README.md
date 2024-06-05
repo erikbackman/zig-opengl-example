@@ -1,3 +1,3 @@
-# Zig OpenGL Exampleo
+# Zig OpenGL Example
 
 Basic OpenGL usage from Zig
