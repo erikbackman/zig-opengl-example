@@ -1,10 +1,5 @@
-// Minimal types to replace glm functionality for this tutorial
-
-// TODO: Inline and fix cross once #3893 is fixed upstream
 const std = @import("std");
 const sqrt = std.math.sqrt;
-const cos = std.math.cos;
-const sin = std.math.sin;
 const tan = std.math.tan;
 const max = std.math.max;
 const min = std.math.min;
@@ -19,7 +14,6 @@ pub fn swap(comptime T: type, a: *T, b: *T) void {
     b.* = t;
 }
 
-/// Mathematical vector types
 fn Vector(comptime d: usize) type {
     return extern struct {
         vals: [d]f32,
@@ -270,7 +264,7 @@ pub fn Matrix(comptime d: usize) type {
         pub fn luSolve(self: Self, b: [d]f32) ![d]f32 {
             const L, const U, const P = try self.luDecompose();
 
-            // solve Ly = Pb using forward subst
+            // solve Ly = Pb u@sing forward subst
             var y: [d]f32 = undefined;
             const Pb = P.apply(b);
 
@@ -281,7 +275,7 @@ pub fn Matrix(comptime d: usize) type {
                 y[i] = Pb[i] - sum;
             }
 
-            // solve Ux = y using backward subst
+            // solve Ux = y u@sing backward subst
             var x = std.mem.zeroes([d]f32);
             x[d - 1] = y[d - 1] / U.vals[d - 1][d - 1];
             for (1..d) |n| {
@@ -322,17 +316,17 @@ pub fn rotation(angle: f32, axis: Vec3) Mat4 {
     const y = unit.vals[1];
     const z = unit.vals[2];
 
-    const a = cos(angle) + x * x * (1 - cos(angle));
-    const b = y * x * (1 - cos(angle)) + z * sin(angle);
-    const c = z * x * (1 - cos(angle)) - y * sin(angle);
+    const a = @cos(angle) + x * x * (1 - @cos(angle));
+    const b = y * x * (1 - @cos(angle)) + z * @sin(angle);
+    const c = z * x * (1 - @cos(angle)) - y * @sin(angle);
 
-    const d = x * y * (1 - cos(angle)) - z * sin(angle);
-    const e = cos(angle) + y * y * (1 - cos(angle));
-    const f = z * y * (1 - cos(angle)) + x * sin(angle);
+    const d = x * y * (1 - @cos(angle)) - z * @sin(angle);
+    const e = @cos(angle) + y * y * (1 - @cos(angle));
+    const f = z * y * (1 - @cos(angle)) + x * @sin(angle);
 
-    const h = x * z * (1 - cos(angle)) + y * sin(angle);
-    const i = y * z * (1 - cos(angle)) - x * sin(angle);
-    const j = cos(angle) + z * z * (1 - cos(angle));
+    const h = x * z * (1 - @cos(angle)) + y * @sin(angle);
+    const i = y * z * (1 - @cos(angle)) - x * @sin(angle);
+    const j = @cos(angle) + z * z * (1 - @cos(angle));
 
     return Mat4{
         .vals = [4][4]f32{

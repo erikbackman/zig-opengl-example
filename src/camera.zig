@@ -4,12 +4,12 @@ const pi = std.math.pi;
 const cos = std.math.cos;
 const sin = std.math.sin;
 
-const glm = @import("math.zig");
-const Vec3 = glm.Vec3;
-const vec3 = glm.vec3;
-const Mat4 = glm.Mat4;
-const lookAt = glm.lookAt;
-const perspective = glm.perspective;
+const math = @import("math.zig");
+const Vec3 = math.Vec3;
+const vec3 = math.vec3;
+const Mat4 = math.Mat4;
+const lookAt = math.lookAt;
+const perspective = math.perspective;
 
 pub const CameraMovement = enum {
     Forward,

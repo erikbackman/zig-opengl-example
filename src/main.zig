@@ -46,15 +46,45 @@ pub fn main() !void {
 
     // Vertex Data
     const vertices = [_]f32{
+        // Back
+        -0.5, -0.5, -0.5, 0.0, 0.5, 0.0, // far bot left
+        0.5, -0.5, -0.5, 0.0, 0.5, 0.0, // far bot right
+        0.5, 0.5, -0.5, 0.0, 0.5, 0.0, // far top right
+        -0.5, 0.5, -0.5, 0.0, 0.5, 0.0, // far top left
         // Front
-        -0.5, -0.5, 0.0, 0.0, 0.5, 0.0, // near bot left
-        0.5, -0.5, 0.0, 0.0, 0.5, 0.0, // near bot right
-        0.5, 0.5, 0.0, 0.0, 0.5, 0.0, // near top right
-        -0.5, 0.5, 0.0, 0.0, 0.5, 0.0, // near top left
+        -0.5, -0.5, 0.5, 0.0, 0.5, 0.0, // near bot left
+        0.5, -0.5, 0.5, 0.0, 0.5, 0.0, // near bot right
+        0.5, 0.5, 0.5, 0.0, 0.5, 0.0, // near top right
+        -0.5, 0.5, 0.5, 0.0, 0.5, 0.0, // near top left
+        // Left
+        -0.5, -0.5, -0.5, 0.0, 0.0, 0.5, // far bot left
+        -0.5, -0.5, 0.5, 0.0, 0.0, 0.5, // near bot left
+        -0.5, 0.5, 0.5, 0.0, 0.0, 0.5, // near top left
+        -0.5, 0.5, -0.5, 0.0, 0.0, 0.5, // far top left
+        // Right
+        0.5, -0.5, -0.5, 0.0, 0.0, 0.5, // far bot right
+        0.5, -0.5, 0.5, 0.0, 0.0, 0.5, // near bot right
+        0.5, 0.5, 0.5, 0.0, 0.0, 0.5, // near top right
+        0.5, 0.5, -0.5, 0.0, 0.0, 0.5, // far top right
+        // Bot
+        -0.5, -0.5, -0.5, 1.0, 0.0, 0.0, // far bot left
+        -0.5, -0.5, 0.5, 1.0, 0.0, 0.0, // near bot left
+        0.5, -0.5, 0.5, 1.0, 0.0, 0.0, // near bot right
+        0.5, -0.5, -0.5, 1.0, 0.0, 0.0, // far bot right
+        // Top
+        -0.5, 0.5, -0.5, 1.0, 0.0, 0.0, // far top left
+        -0.5, 0.5, 0.5, 1.0, 0.0, 0.0, // near top left
+        0.5, 0.5, 0.5, 1.0, 0.0, 0.0, // near top right
+        0.5, 0.5, -0.5, 1.0, 0.0, 0.0, // far top right
     };
 
     const indices = [_]u32{
-        0, 1, 2, 2, 0, 3,
+        0,  1,  2,  2,  0,  3,
+        4,  5,  6,  6,  4,  7,
+        8,  9,  10, 10, 8,  11,
+        12, 13, 14, 14, 12, 15,
+        16, 17, 18, 18, 16, 19,
+        20, 21, 22, 22, 20, 23,
     };
     const vertCount = 6 * indices.len;
     const pos = math.Vec3{ .vals = .{ 0, 0, 0 } };
