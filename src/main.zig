@@ -92,14 +92,13 @@ pub fn main() !void {
 
     // main loop
     while (C.glfwWindowShouldClose(window) == 0) {
-        const frameTime = @as(f32, @floatCast(C.glfwGetTime()));
+        const frameTime: f32 = @floatCast(C.glfwGetTime());
         deltaTime = frameTime - lastFrame;
         lastFrame = frameTime;
 
-        // input
         handleInput(window);
 
-        // render
+        //// render
         C.glClearColor(0.1, 0.1, 0.1, 1.0);
         C.glClear(C.GL_COLOR_BUFFER_BIT | C.GL_DEPTH_BUFFER_BIT);
 
@@ -115,7 +114,6 @@ pub fn main() !void {
         program.setMat4("model", math.translation(pos));
         C.glDrawElements(C.GL_TRIANGLES, vertCount, C.GL_UNSIGNED_INT, null);
 
-        // glfw
         C.glfwSwapBuffers(window);
         C.glfwPollEvents();
     }
@@ -166,7 +164,6 @@ fn initGL() void {
     C.glfwSwapInterval(1);
 
     C.glClearColor(0, 0, 0, 0);
-
     C.glClearDepth(1.0);
     C.glDepthMask(C.GL_TRUE);
     C.glDepthFunc(C.GL_LEQUAL);
@@ -174,5 +171,4 @@ fn initGL() void {
     C.glEnable(C.GL_DEPTH_TEST);
     C.glEnable(C.GL_MULTISAMPLE);
     C.glEnable(C.GL_BLEND);
-    C.glPointSize(10.0);
 }
