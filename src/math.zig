@@ -107,17 +107,13 @@ fn Vector(comptime d: usize) type {
             var vals = self.vals;
             for (vals, 0..) |_, i| {
                 vals[i] /= n;
-                //val.* /= n;
             }
             return Self{ .vals = vals };
         }
 
         pub fn cross(self: Self, other: Self) Self {
             if (d != 3) {
-                // @compileError("Cross product only defined for 3D vectors");
-                // https://github.com/ziglang/zig/issues/3893
-                // Silently fail for now
-                return Self.zeros();
+                @compileError("Cross product only defined for 3D vectors");
             }
             const vals = [3]f32{
                 self.vals[1] * other.vals[2] - self.vals[2] * other.vals[1],
