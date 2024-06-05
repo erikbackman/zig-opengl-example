@@ -121,7 +121,7 @@ pub fn main() !void {
     }
 }
 
-pub fn handleInput(window: ?*C.GLFWwindow) void {
+fn handleInput(window: ?*C.GLFWwindow) void {
     if (C.glfwGetKey(window, C.GLFW_KEY_ESCAPE) == C.GLFW_PRESS)
         C.glfwSetWindowShouldClose(window, 1);
 
@@ -139,11 +139,11 @@ pub fn handleInput(window: ?*C.GLFWwindow) void {
         camera.processKeyboard(.Up, deltaTime);
 }
 
-pub fn sizeCallback(_: ?*C.GLFWwindow, width: c_int, height: c_int) callconv(.C) void {
+fn sizeCallback(_: ?*C.GLFWwindow, width: c_int, height: c_int) callconv(.C) void {
     C.glViewport(0, 0, width, height);
 }
 
-pub fn mouseCallback(window: ?*C.GLFWwindow, x: f64, y: f64) callconv(.C) void {
+fn mouseCallback(window: ?*C.GLFWwindow, x: f64, y: f64) callconv(.C) void {
     if (firstMouse) {
         lastX = x;
         lastY = y;
@@ -159,7 +159,7 @@ pub fn mouseCallback(window: ?*C.GLFWwindow, x: f64, y: f64) callconv(.C) void {
     lastY = y;
 }
 
-pub fn initGL() void {
+fn initGL() void {
     if (C.gladLoadGLLoader(@ptrCast(&C.glfwGetProcAddress)) == 0) {
         panic("Failed to init GLAD\n", .{});
     }
