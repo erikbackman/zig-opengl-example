@@ -18,9 +18,9 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    exe.addIncludePath(std.Build.LazyPath.relative("glad/include"));
+    exe.addIncludePath(b.path("glad/include"));
     exe.addCSourceFile(.{
-        .file = std.Build.LazyPath.relative("glad/src/glad.c"),
+        .file = b.path("glad/src/glad.c"),
         .flags = &[_][]const u8{"-std=c99"},
     });
 
