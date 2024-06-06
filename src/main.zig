@@ -46,36 +46,37 @@ pub fn main() !void {
 
     // Vertex Data
     const vertices = [_]f32{
+        // Position       Normal
         // Back
-        -0.5, -0.5, -0.5, 0.0, 0.5, 0.0, // far bot left
-        0.5, -0.5, -0.5, 0.0, 0.5, 0.0, // far bot right
-        0.5, 0.5, -0.5, 0.0, 0.5, 0.0, // far top right
-        -0.5, 0.5, -0.5, 0.0, 0.5, 0.0, // far top left
+        -0.5, -0.5, -0.5, 0.0, 0.0, -1.0, // far bot left
+        0.5, -0.5, -0.5, 0.0, 0.0, -1.0, // far bot right
+        0.5, 0.5, -0.5, 0.0, 0.0, -1.0, // far top right
+        -0.5, 0.5, -0.5, 0.0, 0.0, -1.0, // far top left
         // Front
-        -0.5, -0.5, 0.5, 0.0, 0.5, 0.0, // near bot left
-        0.5, -0.5, 0.5, 0.0, 0.5, 0.0, // near bot right
-        0.5, 0.5, 0.5, 0.0, 0.5, 0.0, // near top right
-        -0.5, 0.5, 0.5, 0.0, 0.5, 0.0, // near top left
+        -0.5, -0.5, 0.5, 0.0, 0.0, 1.0, // near bot left
+        0.5, -0.5, 0.5, 0.0, 0.0, 1.0, // near bot right
+        0.5, 0.5, 0.5, 0.0, 0.0, 1.0, // near top right
+        -0.5, 0.5, 0.5, 0.0, 0.0, 1.0, // near top left
         // Left
-        -0.5, -0.5, -0.5, 0.0, 0.0, 0.5, // far bot left
-        -0.5, -0.5, 0.5, 0.0, 0.0, 0.5, // near bot left
-        -0.5, 0.5, 0.5, 0.0, 0.0, 0.5, // near top left
-        -0.5, 0.5, -0.5, 0.0, 0.0, 0.5, // far top left
+        -0.5, -0.5, -0.5, -1.0, 0.0, 0.0, // far bot left
+        -0.5, -0.5, 0.5, -1.0, 0.0, 0.0, // near bot left
+        -0.5, 0.5, 0.5, -1.0, 0.0, 0.0, // near top left
+        -0.5, 0.5, -0.5, -1.0, 0.0, 0.0, // far top left
         // Right
-        0.5, -0.5, -0.5, 0.0, 0.0, 0.5, // far bot right
-        0.5, -0.5, 0.5, 0.0, 0.0, 0.5, // near bot right
-        0.5, 0.5, 0.5, 0.0, 0.0, 0.5, // near top right
-        0.5, 0.5, -0.5, 0.0, 0.0, 0.5, // far top right
-        // Bot
-        -0.5, -0.5, -0.5, 1.0, 0.0, 0.0, // far bot left
-        -0.5, -0.5, 0.5, 1.0, 0.0, 0.0, // near bot left
-        0.5, -0.5, 0.5, 1.0, 0.0, 0.0, // near bot right
         0.5, -0.5, -0.5, 1.0, 0.0, 0.0, // far bot right
-        // Top
-        -0.5, 0.5, -0.5, 1.0, 0.0, 0.0, // far top left
-        -0.5, 0.5, 0.5, 1.0, 0.0, 0.0, // near top left
+        0.5, -0.5, 0.5, 1.0, 0.0, 0.0, // near bot right
         0.5, 0.5, 0.5, 1.0, 0.0, 0.0, // near top right
         0.5, 0.5, -0.5, 1.0, 0.0, 0.0, // far top right
+        // Bot
+        -0.5, -0.5, -0.5, 0.0, -1.0, 0.0, // far bot left
+        -0.5, -0.5, 0.5, 0.0, -1.0, 0.0, // near bot left
+        0.5, -0.5, 0.5, 0.0, -1.0, 0.0, // near bot right
+        0.5, -0.5, -0.5, 0.0, -1.0, 0.0, // far bot right
+        // Top
+        -0.5, 0.5, -0.5, 0.0, 1.0, 0.0, // far top left
+        -0.5, 0.5, 0.5, 0.0, 1.0, 0.0, // near top left
+        0.5, 0.5, 0.5, 0.0, 1.0, 0.0, // near top right
+        0.5, 0.5, -0.5, 0.0, 1.0, 0.0, // far top right
     };
 
     const indices = [_]u32{
@@ -134,6 +135,9 @@ pub fn main() !void {
 
         // activate shader
         program.use();
+        program.setVec3("objectColor", 1.0, 0.5, 0.3);
+        program.setVec3("lightColor", 1.0, 1.0, 1.0);
+        program.setVec3("lightPos", 1.2, 1.0, 2.0);
 
         // camera
         program.setMat4("view", camera.getViewMatrix());
