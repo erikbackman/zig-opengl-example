@@ -88,7 +88,7 @@ pub fn main() !void {
         20, 21, 22, 22, 20, 23,
     };
     const vertex_count = 6 * indices.len;
-    const cube_pos = math.Vec3{ .vals = .{ 0, 0, 0 } };
+    const cube_pos = math.Vec3.fill(0);
 
     // Init buffers
     var VAO: c_uint = undefined;
