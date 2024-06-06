@@ -41,8 +41,11 @@ pub fn main() !void {
     // Shader Program
     const allocator = std.heap.page_allocator;
 
-    var program: Shader = try Shader.init(allocator, "shader.vert", "shader.frag");
-    defer program.deinit();
+    var lightShader: Shader = try Shader.init(allocator, "shader.vert", "shader.frag");
+    defer lightShader.deinit();
+
+    var lightCubeShader = try Shader.init(allocator, "light_cube.vert", "light_cube.frag");
+    defer lightCubeShader.deinit();
 
     // Vertex Data
     const vertices = [_]f32{
@@ -94,6 +97,7 @@ pub fn main() !void {
     var VAO: c_uint = undefined;
     var VBO: c_uint = undefined;
     var EBO: c_uint = undefined;
+    var lightCubeVAO: c_uint = undefined;
 
     C.glGenVertexArrays(1, &VAO);
     defer C.glDeleteVertexArrays(1, &VAO);
@@ -101,13 +105,15 @@ pub fn main() !void {
     defer C.glDeleteBuffers(1, &VBO);
     C.glGenBuffers(1, &EBO);
     defer C.glDeleteBuffers(1, &EBO);
+    C.glGenVertexArrays(1, &lightCubeVAO);
+    defer C.glDeleteVertexArrays(1, &lightCubeVAO);
 
-    // Bind buffers
-    C.glBindVertexArray(VAO);
-
+    // Upload vertices to GPU
     C.glBindBuffer(C.GL_ARRAY_BUFFER, VBO);
     C.glBufferData(C.GL_ARRAY_BUFFER, vertices.len * @sizeOf(f32), &vertices, C.GL_STATIC_DRAW);
 
+    // Cube VAO
+    C.glBindVertexArray(VAO);
     C.glBindBuffer(C.GL_ELEMENT_ARRAY_BUFFER, EBO);
     C.glBufferData(C.GL_ELEMENT_ARRAY_BUFFER, indices.len * @sizeOf(u32), &indices, C.GL_STATIC_DRAW);
 
@@ -117,9 +123,14 @@ pub fn main() !void {
     C.glVertexAttribPointer(1, 3, C.GL_FLOAT, C.GL_FALSE, 6 * @sizeOf(f32), @as(*anyopaque, @ptrFromInt(3 * @sizeOf(f32))));
     C.glEnableVertexAttribArray(1);
 
-    C.glBindBuffer(C.GL_ARRAY_BUFFER, 0);
+    // LightCube VAO
+    C.glBindVertexArray(lightCubeVAO);
+    C.glBindBuffer(C.GL_ELEMENT_ARRAY_BUFFER, EBO);
+    C.glBufferData(C.GL_ELEMENT_ARRAY_BUFFER, indices.len * @sizeOf(u32), &indices, C.GL_STATIC_DRAW);
 
-    C.glBindVertexArray(0);
+    C.glBindBuffer(C.GL_ARRAY_BUFFER, VBO);
+    C.glVertexAttribPointer(0, 3, C.GL_FLOAT, C.GL_FALSE, 6 * @sizeOf(f32), null);
+    C.glEnableVertexAttribArray(0);
 
     // main loop
     while (C.glfwWindowShouldClose(window) == 0) {
@@ -133,19 +144,35 @@ pub fn main() !void {
         C.glClearColor(0.1, 0.1, 0.1, 1.0);
         C.glClear(C.GL_COLOR_BUFFER_BIT | C.GL_DEPTH_BUFFER_BIT);
 
+        const lightPos = [_]f32{ 5 * @cos(frameTime), 1.0, 5 * @sin(frameTime) };
         // activate shader
-        program.use();
-        program.setVec3("objectColor", 1.0, 0.5, 0.3);
-        program.setVec3("lightColor", 1.0, 1.0, 1.0);
-        program.setVec3("lightPos", 1.2, 1.0, 2.0);
+        lightShader.use();
+        lightShader.setVec3("objectColor", 1.0, 0.5, 0.3);
+        lightShader.setVec3("lightColor", 1.0, 1.0, 1.0);
+        lightShader.setVec3("lightPos", lightPos[0], lightPos[1], lightPos[2]);
 
         // camera
-        program.setMat4("view", camera.getViewMatrix());
-        program.setMat4("proj", camera.getProjMatrix(@as(f32, winWidth) / @as(f32, winHeight)));
+        const view = camera.getViewMatrix();
+        const proj = camera.getProjMatrix(@as(f32, winWidth) / @as(f32, winHeight));
+        lightShader.setMat4("view", view);
+        lightShader.setMat4("proj", proj);
 
-        // render quads
+        // render cube
         C.glBindVertexArray(VAO);
-        program.setMat4("model", math.translation(pos));
+        lightShader.setMat4("model", math.translation(pos));
+        C.glDrawElements(C.GL_TRIANGLES, vertCount, C.GL_UNSIGNED_INT, null);
+
+        // render light source
+        lightCubeShader.use();
+        lightCubeShader.setMat4("view", view);
+        lightCubeShader.setMat4("proj", proj);
+        const scale = math.scale(math.Vec3.fill(0.2));
+        const trans = math.translation(.{ .vals = .{ lightPos[0], lightPos[1], lightPos[2] } });
+        const model = scale.mul(trans);
+
+        lightCubeShader.setMat4("model", model);
+
+        C.glBindVertexArray(lightCubeVAO);
         C.glDrawElements(C.GL_TRIANGLES, vertCount, C.GL_UNSIGNED_INT, null);
 
         C.glfwSwapBuffers(window);
