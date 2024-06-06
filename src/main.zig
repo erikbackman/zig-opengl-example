@@ -6,23 +6,23 @@ const CameraMovement = @import("camera.zig").CameraMovement;
 const math = @import("math.zig");
 const panic = std.debug.panic;
 
+const WIN_W: u32 = 800;
+const WIN_H: u32 = 600;
+
 var camera = Camera.default();
 
-const winWidth: u32 = 800;
-const winHeight: u32 = 600;
+var delta_time: f32 = 0.0;
+var last_frame_time: f32 = 0.0;
 
-var deltaTime: f32 = 0.0;
-var lastFrame: f32 = 0.0;
-
-var firstMouse = false;
-var lastX: f64 = 0.0;
-var lastY: f64 = 0.0;
+var first_mouse = false;
+var last_x: f64 = 0.0;
+var last_y: f64 = 0.0;
 
 pub fn main() !void {
     if (C.glfwInit() == 0) {
         panic("Failed to init glfw\n", .{});
     }
-    const window = C.glfwCreateWindow(winWidth, winHeight, "Zig OpenGL Example", null, null);
+    const window = C.glfwCreateWindow(WIN_W, WIN_H, "Zig OpenGL Example", null, null);
     defer {
         C.glfwDestroyWindow(window);
         C.glfwTerminate();
@@ -87,8 +87,8 @@ pub fn main() !void {
         16, 17, 18, 18, 16, 19,
         20, 21, 22, 22, 20, 23,
     };
-    const vertCount = 6 * indices.len;
-    const pos = math.Vec3{ .vals = .{ 0, 0, 0 } };
+    const vertex_count = 6 * indices.len;
+    const cube_pos = math.Vec3{ .vals = .{ 0, 0, 0 } };
 
     // Init buffers
     var VAO: c_uint = undefined;
@@ -102,12 +102,13 @@ pub fn main() !void {
     C.glGenBuffers(1, &EBO);
     defer C.glDeleteBuffers(1, &EBO);
 
-    // Bind buffers
-    C.glBindVertexArray(VAO);
-
+    // Upload vertex data
     C.glBindBuffer(C.GL_ARRAY_BUFFER, VBO);
     C.glBufferData(C.GL_ARRAY_BUFFER, vertices.len * @sizeOf(f32), &vertices, C.GL_STATIC_DRAW);
 
+    // Configure VAO
+    C.glBindVertexArray(VAO);
+    // Upload index data
     C.glBindBuffer(C.GL_ELEMENT_ARRAY_BUFFER, EBO);
     C.glBufferData(C.GL_ELEMENT_ARRAY_BUFFER, indices.len * @sizeOf(u32), &indices, C.GL_STATIC_DRAW);
 
@@ -117,36 +118,32 @@ pub fn main() !void {
     C.glVertexAttribPointer(1, 3, C.GL_FLOAT, C.GL_FALSE, 6 * @sizeOf(f32), @as(*anyopaque, @ptrFromInt(3 * @sizeOf(f32))));
     C.glEnableVertexAttribArray(1);
 
-    C.glBindBuffer(C.GL_ARRAY_BUFFER, 0);
-
-    C.glBindVertexArray(0);
-
     // main loop
     while (C.glfwWindowShouldClose(window) == 0) {
-        const frameTime: f32 = @floatCast(C.glfwGetTime());
-        deltaTime = frameTime - lastFrame;
-        lastFrame = frameTime;
+        const frame_time: f32 = @floatCast(C.glfwGetTime());
+        delta_time = frame_time - last_frame_time;
+        last_frame_time = frame_time;
 
         handleInput(window);
 
-        //// render
+        //// Render
         C.glClearColor(0.1, 0.1, 0.1, 1.0);
         C.glClear(C.GL_COLOR_BUFFER_BIT | C.GL_DEPTH_BUFFER_BIT);
 
-        // activate shader
+        // Activate shader
         program.use();
         program.setVec3("objectColor", 1.0, 0.5, 0.3);
         program.setVec3("lightColor", 1.0, 1.0, 1.0);
         program.setVec3("lightPos", 1.2, 1.0, 2.0);
 
-        // camera
+        // Camera
         program.setMat4("view", camera.getViewMatrix());
-        program.setMat4("proj", camera.getProjMatrix(@as(f32, winWidth) / @as(f32, winHeight)));
+        program.setMat4("proj", camera.getProjMatrix(@as(f32, WIN_W) / @as(f32, WIN_H)));
 
-        // render quads
+        // Render cube
         C.glBindVertexArray(VAO);
-        program.setMat4("model", math.translation(pos));
-        C.glDrawElements(C.GL_TRIANGLES, vertCount, C.GL_UNSIGNED_INT, null);
+        program.setMat4("model", math.translation(cube_pos));
+        C.glDrawElements(C.GL_TRIANGLES, vertex_count, C.GL_UNSIGNED_INT, null);
 
         C.glfwSwapBuffers(window);
         C.glfwPollEvents();
@@ -158,17 +155,17 @@ fn handleInput(window: ?*C.GLFWwindow) void {
         C.glfwSetWindowShouldClose(window, 1);
 
     if (C.glfwGetKey(window, C.GLFW_KEY_W) == C.GLFW_PRESS)
-        camera.processKeyboard(.Forward, deltaTime);
+        camera.processKeyboard(.Forward, delta_time);
     if (C.glfwGetKey(window, C.GLFW_KEY_S) == C.GLFW_PRESS)
-        camera.processKeyboard(.Backward, deltaTime);
+        camera.processKeyboard(.Backward, delta_time);
     if (C.glfwGetKey(window, C.GLFW_KEY_A) == C.GLFW_PRESS)
-        camera.processKeyboard(.Left, deltaTime);
+        camera.processKeyboard(.Left, delta_time);
     if (C.glfwGetKey(window, C.GLFW_KEY_D) == C.GLFW_PRESS)
-        camera.processKeyboard(.Right, deltaTime);
+        camera.processKeyboard(.Right, delta_time);
     if (C.glfwGetKey(window, C.GLFW_KEY_Q) == C.GLFW_PRESS)
-        camera.processKeyboard(.Down, deltaTime);
+        camera.processKeyboard(.Down, delta_time);
     if (C.glfwGetKey(window, C.GLFW_KEY_E) == C.GLFW_PRESS)
-        camera.processKeyboard(.Up, deltaTime);
+        camera.processKeyboard(.Up, delta_time);
 }
 
 fn sizeCallback(_: ?*C.GLFWwindow, width: c_int, height: c_int) callconv(.C) void {
@@ -176,19 +173,19 @@ fn sizeCallback(_: ?*C.GLFWwindow, width: c_int, height: c_int) callconv(.C) voi
 }
 
 fn mouseCallback(window: ?*C.GLFWwindow, x: f64, y: f64) callconv(.C) void {
-    if (firstMouse) {
-        lastX = x;
-        lastY = y;
-        firstMouse = false;
+    if (first_mouse) {
+        last_x = x;
+        last_y = y;
+        first_mouse = false;
     }
-    const xoffset: f64 = x - lastX;
-    const yoffset: f64 = lastY - y;
+    const xoffset: f64 = x - last_x;
+    const yoffset: f64 = last_y - y;
 
     if (C.glfwGetMouseButton(window, C.GLFW_MOUSE_BUTTON_LEFT) == C.GLFW_PRESS) {
         camera.processMouse(xoffset, yoffset);
     }
-    lastX = x;
-    lastY = y;
+    last_x = x;
+    last_y = y;
 }
 
 fn initGL() void {
