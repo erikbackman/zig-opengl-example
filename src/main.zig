@@ -87,7 +87,6 @@ pub fn main() !void {
         16, 17, 18, 18, 16, 19,
         20, 21, 22, 22, 20, 23,
     };
-    const vertex_count = 6 * indices.len;
     const cube_pos = math.Vec3.fill(0);
 
     // Init buffers
@@ -143,7 +142,7 @@ pub fn main() !void {
         // Render cube
         C.glBindVertexArray(VAO);
         program.setMat4("model", math.translation(cube_pos));
-        C.glDrawElements(C.GL_TRIANGLES, vertex_count, C.GL_UNSIGNED_INT, null);
+        C.glDrawElements(C.GL_TRIANGLES, indices.len, C.GL_UNSIGNED_INT, null);
 
         C.glfwSwapBuffers(window);
         C.glfwPollEvents();

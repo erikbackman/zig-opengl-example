@@ -264,7 +264,7 @@ pub fn Matrix(comptime d: usize) type {
         pub fn luSolve(self: Self, b: [d]f32) ![d]f32 {
             const L, const U, const P = try self.luDecompose();
 
-            // solve Ly = Pb u@sing forward subst
+            // solve Ly = Pb using forward subst
             var y: [d]f32 = undefined;
             const Pb = P.apply(b);
 
@@ -275,7 +275,7 @@ pub fn Matrix(comptime d: usize) type {
                 y[i] = Pb[i] - sum;
             }
 
-            // solve Ux = y u@sing backward subst
+            // solve Ux = y using backward subst
             var x = std.mem.zeroes([d]f32);
             x[d - 1] = y[d - 1] / U.vals[d - 1][d - 1];
             for (1..d) |n| {
