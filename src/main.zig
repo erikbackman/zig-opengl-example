@@ -3,6 +3,7 @@ const std = @import("std");
 const Shader = @import("shader.zig").Shader;
 const Camera = @import("camera.zig").Camera;
 const math = @import("math.zig");
+const vec3 = math.vec3;
 const panic = std.debug.panic;
 
 const WIN_W: u32 = 800;
@@ -87,6 +88,7 @@ pub fn main() !void {
         20, 21, 22, 22, 20, 23,
     };
     const cube_pos = math.Vec3.fill(0);
+    camera.position = vec3(0, 0.8, 3);
 
     // Init buffers
     var VAO: c_uint = undefined;
