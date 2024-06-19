@@ -2,7 +2,6 @@ const C = @import("c.zig");
 const std = @import("std");
 const Shader = @import("shader.zig").Shader;
 const Camera = @import("camera.zig").Camera;
-const CameraMovement = @import("camera.zig").CameraMovement;
 const math = @import("math.zig");
 const panic = std.debug.panic;
 
