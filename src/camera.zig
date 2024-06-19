@@ -41,14 +41,15 @@ pub const Camera = struct {
             .position = position,
             .front = vec3(0.0, 0.0, -1.0),
             .up = up,
-            .right = vec3(-1.0, 0, 0, 0.0),
+            .right = vec3(-1.0, 0.0, 0.0),
             .worldUp = up,
             .fov = 45.0,
             .sensitivity = 0.3,
             .yaw = yaw,
             .pitch = pitch,
+            .speed = 2.0,
         };
-        camera.udpateCameraVectors();
+        camera.updateCameraVectors();
         return camera;
     }
 
