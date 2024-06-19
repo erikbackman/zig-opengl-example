@@ -15,7 +15,7 @@ pub fn swap(comptime T: type, a: *T, b: *T) void {
 }
 
 fn Vector(comptime d: usize) type {
-    return extern struct {
+    return struct {
         vals: [d]f32,
 
         const Self = @This();
@@ -128,7 +128,7 @@ pub fn vec3(x: f32, y: f32, z: f32) Vec3 {
 }
 
 pub fn Matrix(comptime d: usize) type {
-    return extern struct {
+    return struct {
         vals: [d][d]f32,
 
         const Self = @This();
