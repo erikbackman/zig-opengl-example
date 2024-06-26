@@ -115,7 +115,7 @@ pub fn main() !void {
     C.glVertexAttribPointer(0, 3, C.GL_FLOAT, C.GL_FALSE, 6 * @sizeOf(f32), null);
     C.glEnableVertexAttribArray(0);
 
-    C.glVertexAttribPointer(1, 3, C.GL_FLOAT, C.GL_FALSE, 6 * @sizeOf(f32), @as(*anyopaque, @ptrFromInt(3 * @sizeOf(f32))));
+    C.glVertexAttribPointer(1, 3, C.GL_FLOAT, C.GL_FALSE, 6 * @sizeOf(f32), offsetPtr(f32, 3));
     C.glEnableVertexAttribArray(1);
 
     // main loop
@@ -148,6 +148,14 @@ pub fn main() !void {
         C.glfwSwapBuffers(window);
         C.glfwPollEvents();
     }
+}
+
+fn offsetPtr(comptime T: type, offset: usize) *anyopaque {
+    // https://docs.gl/gl4/glVertexAttribPointer
+    // Specifies a offset of the first component of the first generic
+    // vertex attribute in the array in the data store of the buffer
+    // currently bound to the GL_ARRAY_BUFFER target.
+    return @ptrFromInt(offset * @sizeOf(T));
 }
 
 fn handleInput(window: ?*C.GLFWwindow) void {
